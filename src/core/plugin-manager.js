@@ -17,7 +17,7 @@ import path from 'path';
 const PLUGINS_CONFIG_FILE = path.join(process.cwd(), 'configs', 'plugins.json');
 
 // 默认禁用的插件列表
-const DEFAULT_DISABLED_PLUGINS = ['api-potluck', 'ai-monitor'];
+const DEFAULT_DISABLED_PLUGINS = ['ai-monitor'];
 
 /**
  * 插件类型常量
