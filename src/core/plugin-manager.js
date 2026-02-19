@@ -60,6 +60,8 @@ class PluginManager {
         this.pluginsConfig = { plugins: {} };
         /** @type {boolean} */
         this.initialized = false;
+        /** @type {Object|null} */
+        this.runtimeConfig = null;
     }
 
     /**
@@ -189,6 +191,7 @@ class PluginManager {
      * @param {Object} config - 服务器配置
      */
     async initAll(config) {
+        this.runtimeConfig = config;
         await this.loadConfig();
         
         for (const [name, plugin] of this.plugins) {
@@ -491,7 +494,32 @@ class PluginManager {
         
         const plugin = this.plugins.get(name);
         if (plugin) {
-            plugin._enabled = enabled;
+            if (enabled && plugin._enabled !== true) {
+                try {
+                    if (typeof plugin.init === 'function') {
+                        await plugin.init(this.runtimeConfig || {});
+                    }
+                    plugin._enabled = true;
+                    logger.info(`[PluginManager] Enabled plugin: ${name}`);
+                } catch (error) {
+                    plugin._enabled = false;
+                    logger.error(`[PluginManager] Failed to enable plugin "${name}":`, error.message);
+                    throw error;
+                }
+            } else if (!enabled && plugin._enabled === true) {
+                try {
+                    if (typeof plugin.destroy === 'function') {
+                        await plugin.destroy();
+                    }
+                    plugin._enabled = false;
+                    logger.info(`[PluginManager] Disabled plugin: ${name}`);
+                } catch (error) {
+                    logger.error(`[PluginManager] Failed to disable plugin "${name}":`, error.message);
+                    throw error;
+                }
+            } else {
+                plugin._enabled = enabled;
+            }
         }
     }
 }
