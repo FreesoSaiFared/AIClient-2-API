@@ -112,7 +112,7 @@ function getProviderTypeFields(providerType) {
         'openai-custom': [
             {
                 id: 'OPENAI_API_KEY',
-                label: t('modal.provider.field.apiKey'),
+                label: `${t('modal.provider.field.apiKey')} <span class="optional-tag">${t('config.optional')}</span>`,
                 type: 'password',
                 placeholder: 'sk-...'
             },

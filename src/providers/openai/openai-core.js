@@ -8,14 +8,17 @@ import { isRetryableNetworkError } from '../../utils/common.js';
 // Assumed OpenAI API specification service for interacting with third-party models
 export class OpenAIApiService {
     constructor(config) {
-        if (!config.OPENAI_API_KEY) {
-            throw new Error("OpenAI API Key is required for OpenAIApiService.");
-        }
         this.config = config;
-        this.apiKey = config.OPENAI_API_KEY;
+        this.apiKey = typeof config.OPENAI_API_KEY === 'string' ? config.OPENAI_API_KEY.trim() : '';
         this.baseUrl = config.OPENAI_BASE_URL;
+        if (!this.baseUrl) {
+            throw new Error("OpenAI Base URL is required for OpenAIApiService.");
+        }
         this.useSystemProxy = config?.USE_SYSTEM_PROXY_OPENAI ?? false;
         logger.info(`[OpenAI] System proxy ${this.useSystemProxy ? 'enabled' : 'disabled'}`);
+        if (!this.apiKey) {
+            logger.info('[OpenAI] API key is empty, requests will be sent without Authorization header.');
+        }
 
         // 配置 HTTP/HTTPS agent 限制连接池大小，避免资源泄漏
         const httpAgent = new http.Agent({
@@ -31,14 +34,18 @@ export class OpenAIApiService {
             timeout: 120000,
         });
 
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        if (this.apiKey) {
+            headers.Authorization = `Bearer ${this.apiKey}`;
+        }
+
         const axiosConfig = {
             baseURL: this.baseUrl,
             httpAgent,
             httpsAgent,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.apiKey}`
-            },
+            headers,
         };
         
         // 禁用系统代理以避免HTTPS代理错误
@@ -69,7 +76,7 @@ export class OpenAIApiService {
             const isNetworkError = isRetryableNetworkError(error);
             
             if (status === 401 || status === 403) {
-                logger.error(`[OpenAI API] Received ${status}. API Key might be invalid or expired.`);
+                logger.error(`[OpenAI API] Received ${status}. API key might be invalid, expired, or missing.`);
                 throw error;
             }
 
@@ -151,7 +158,7 @@ export class OpenAIApiService {
             const isNetworkError = isRetryableNetworkError(error);
             
             if (status === 401 || status === 403) {
-                logger.error(`[OpenAI API] Received ${status} during stream. API Key might be invalid or expired.`);
+                logger.error(`[OpenAI API] Received ${status} during stream. API key might be invalid, expired, or missing.`);
                 throw error;
             }
 
@@ -220,4 +227,3 @@ export class OpenAIApiService {
         }
     }
 }
-

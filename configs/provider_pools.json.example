@@ -29,6 +29,20 @@
       "usageCount": 0,
       "errorCount": 0,
       "lastErrorTime": null
+    },
+    {
+      "customName": "llama.cpp本地节点",
+      "OPENAI_API_KEY": "",
+      "OPENAI_BASE_URL": "http://127.0.0.1:8080/v1",
+      "checkModelName": "your-llama-model",
+      "checkHealth": false,
+      "uuid": "9f9cc924-fdbf-49a3-9a8b-08d8e48f7f52",
+      "isHealthy": true,
+      "isDisabled": false,
+      "lastUsed": null,
+      "usageCount": 0,
+      "errorCount": 0,
+      "lastErrorTime": null
     }
   ],
   "openaiResponses-custom": [

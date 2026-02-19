@@ -334,6 +334,25 @@ curl http://localhost:3000/ollama/api/chat \
 <details>
 <summary>Click to expand proxy configuration, model filtering, and Fallback advanced settings</summary>
 
+#### 0. llama.cpp Integration (OpenAI-compatible)
+
+If your `llama.cpp` server is running with OpenAI-compatible endpoints (for example `/v1/chat/completions`), configure it as an `openai-custom` provider:
+
+```json
+{
+  "customName": "llama.cpp-local",
+  "OPENAI_API_KEY": "",
+  "OPENAI_BASE_URL": "http://127.0.0.1:8080/v1",
+  "checkModelName": "your-llama-model",
+  "checkHealth": false
+}
+```
+
+Notes:
+- `OPENAI_API_KEY` can be empty for `llama.cpp` instances that do not require auth.
+- If your `llama.cpp` server enforces `--api-key`, set that key in `OPENAI_API_KEY`.
+- Make sure the base URL ends with `/v1`.
+
 #### 1. Proxy Configuration
 
 This project supports flexible proxy configuration, allowing you to configure a unified proxy for different providers or use provider-specific proxied endpoints.

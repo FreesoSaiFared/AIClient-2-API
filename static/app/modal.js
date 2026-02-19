@@ -693,7 +693,7 @@ function getFieldOrder(provider) {
     // 尝试从全局或当前模态框上下文中推断提供商类型
     let providerType = currentProviderType;
     if (!providerType) {
-        if (provider.OPENAI_API_KEY && provider.OPENAI_BASE_URL) {
+        if (provider.OPENAI_BASE_URL) {
             providerType = 'openai-custom';
         } else if (provider.CLAUDE_API_KEY && provider.CLAUDE_BASE_URL) {
             providerType = 'claude-custom';
